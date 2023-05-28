@@ -20,20 +20,12 @@ const {
   findUserByVerificationToken,
 } = require('./auth.services');
 
-const {
-  findDeveloperById,
-} = require('../developer/developer.services');
-
-const { sendRegisterVerificationEmail } = require('../../misc/utils/emailer');
-
 const CONTROLLER = 'src/controllers/auth/auth.ctrl.js';
 const FUNC_POST_REGISTER = 'postRegister()';
 const FUNC_POST_LOGIN = 'postLogin()';
 const FUNC_RECOVER_PASSWORD = 'recoverPassword()';
 const FUNC_RESET_PASSWORD = 'resetPassword()';
 const FUNC_USER_VERIFICATION = 'userVerification()';
-
-const { sendRecoverPasswordEmail } = require('../../misc/utils/emailer');
 
 // USER VERIFICATION
 const userVerification = (app) => async (req, res) => {
@@ -159,34 +151,11 @@ const postLogin = (app) => async (req, res) => {
       .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Wrong credentials' }));
     return;
   }
-
-  let clockifyKey;
-  let clockifyUserId;
-  let notionUserId;
-  if (user.developer) {
-    try {
-      const developer = await findDeveloperById(app, { id: user.developer.id });
-      clockifyKey = developer ? developer.clockifyApiKey : null;
-      clockifyUserId = developer ? developer.clockifyId : null;
-      notionUserId = developer ? developer.notionUserId : null;
-    } catch (err) {
-      logger.error(`${CONTROLLER}::${FUNC_POST_LOGIN}: ${err.message}`, {
-        ...req.body,
-      });
-      res.status(INTERNAL_SERVER_ERROR.status)
-        .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
-      return;
-    }
-  }
-
   // User exists and passwords match
   try {
     token = await sign(user);
     data.accessToken = token;
-    data.clockifyUserId = clockifyUserId;
     data.user = user;
-    data.clockifyKey = clockifyKey;
-    data.notionUserId = notionUserId;
 
     res.status(OK.status)
       .json(responseGenerator(OK.status, data));
@@ -234,7 +203,6 @@ const recoverPassword = (app) => async (req, res) => {
     await user.save();
 
     // Send email
-    await sendRecoverPasswordEmail(email, token);
 
     res.status(OK.status)
       .json(responseGenerator(OK.status, {}));
@@ -414,7 +382,6 @@ const postRegister = (app) => async (req, res) => {
 
   try {
     // Send email
-    await sendRegisterVerificationEmail(email, token);
   } catch (err) {
     res.status(INTERNAL_SERVER_ERROR.status)
       .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: 'Error sending email' }));
