@@ -1,9 +1,9 @@
 require('dotenv').config();
 
 const {
-  DB_USERNAME = 'apidb',
-  DB_PASSWORD = 'apidb',
-  DB_NAME = 'apidb',
+  DB_USERNAME = 'financial',
+  DB_PASSWORD = 'financial',
+  DB_NAME = 'financial',
   DB_HOST = 'localhost',
   DB_PORT = '5432',
   NODE_ENV = 'development',
