@@ -1,0 +1,3 @@
+GET http://localhost:5001/users?limit=1&page=0&searchValue=patricio
+Authorization: Bearer {{$dotenv AUTHORIZATION_TOKEN}}
+x-user-token: {{$dotenv TOKEN_X_USER}}

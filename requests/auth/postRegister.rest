@@ -1,0 +1,13 @@
+POST http://localhost:5001/register
+Authorization: Bearer {{$dotenv AUTHORIZATION_TOKEN}}
+x-user-token: {{$dotenv TOKEN_X_USER}}
+Content-Type: application/json
+
+{   
+    "name": "Giulia",
+    "lastname": "Barber",
+    "email": "giulia@tubesoft.cl",
+    "roleId": 1,
+    "phone": "+5493517039218",
+    "country": "Argentina"
+}

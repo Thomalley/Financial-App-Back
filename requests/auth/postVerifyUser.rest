@@ -1,0 +1,8 @@
+POST http://localhost:5001/user-verification 
+Content-Type: application/json
+
+{   
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzc1OTQ4MTI4NTYsImVtYWlsIjoianVsaWJhcmJlcjIyQGdtYWlsLmNvbSIsImlhdCI6MTY3Njk5MDAxMn0._lFDsZc5NEWu3UMWKSS8BDqdNmKRYdaTu9niBjwi7-M",
+    "password": "password",
+    "confirmPassword": "password"
+}

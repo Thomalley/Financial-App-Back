@@ -1,0 +1,14 @@
+PUT http://localhost:5001/user/edit
+Authorization: Bearer {{$dotenv AUTHORIZATION_TOKEN}}
+x-user-token: {{$dotenv TOKEN_X_USER}}
+Content-Type: application/json
+
+{   
+    "id": "18",
+    "name": "Giulia",
+    "lastname": "Barber",
+    "email": "julibarber22@gmail.com",
+    "role": "superAdmin",
+    "country": "Argentina",
+    "phone": "+5493517039218"
+}
