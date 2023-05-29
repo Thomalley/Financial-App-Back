@@ -6,6 +6,11 @@ module.exports = {
       allowNull: false,
       defaultValue: false,
     });
+    await queryInterface.changeColumn('users', 'active', {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    });
   },
 
   async down(queryInterface, Sequelize) {
@@ -13,6 +18,11 @@ module.exports = {
     await queryInterface.addColumn('users', 'role', {
       type: Sequelize.STRING,
       allowNull: false,
+    });
+    await queryInterface.changeColumn('users', 'active', {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     });
   },
 };
