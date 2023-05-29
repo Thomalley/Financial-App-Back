@@ -4,16 +4,16 @@ const {
 
 module.exports = (sequelize, DataTypes) => {
   class user extends Model {
-    static associate({
-      developer, role, company, blog,
-    }) {
-      user.hasOne(developer);
-      user.belongsTo(role, { foreignKey: 'roleId' });
-      user.belongsTo(company, { foreignKey: 'company_id' });
-      user.hasMany(blog, { foreignKey: 'userId' });
+    static associate() {
     }
   }
   user.init({
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -33,29 +33,22 @@ module.exports = (sequelize, DataTypes) => {
     userTokenVerification: {
       type: DataTypes.STRING,
       field: 'user_token_verification',
+      allowNull: true,
     },
     resetPasswordToken: {
       type: DataTypes.STRING,
       field: 'reset_password_token',
-    },
-    roleId: {
-      type: DataTypes.INTEGER,
-      field: 'role_id',
-    },
-    companyId: {
-      type: DataTypes.INTEGER,
-      field: 'company_id',
+      allowNull: true,
     },
     active: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    country: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -72,6 +65,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'user',
+    tableName: 'users',
+    timestamps: false,
   });
   return user;
 };
