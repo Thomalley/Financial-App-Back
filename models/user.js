@@ -33,15 +33,17 @@ module.exports = (sequelize, DataTypes) => {
     userTokenVerification: {
       type: DataTypes.STRING,
       field: 'user_token_verification',
+      allowNull: true,
     },
     resetPasswordToken: {
       type: DataTypes.STRING,
       field: 'reset_password_token',
+      allowNull: true,
     },
     active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     deleted: {
       type: DataTypes.BOOLEAN,
