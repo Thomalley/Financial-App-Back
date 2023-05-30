@@ -4,15 +4,17 @@ const re = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].
 const pre = /^[a-zA-Z0-9]/;
 
 const registerSchema = Joi.object({
-  email: Joi.string().min(3).max(255).pattern(new RegExp(re))
+  email: Joi.string()
+    .min(3)
+    .max(255)
+    .pattern(new RegExp(re))
     .required(),
-  name: Joi.string().min(2).max(255).pattern(new RegExp(pre))
+  name: Joi.string()
     .required(),
-  lastname: Joi.string().min(2).max(255).pattern(new RegExp(pre))
+  lastname: Joi.string()
     .required(),
-  roleId: Joi.number().max(255).required(),
-  phone: Joi.string().min(2).max(255).required(),
-  country: Joi.string().min(2).max(255).required(),
+  password: Joi.string()
+    .required(),
 });
 
 const loginSchema = Joi.object({

@@ -323,9 +323,7 @@ const postRegister = (app) => async (req, res) => {
     email,
     name,
     lastname,
-    roleId,
-    phone,
-    country,
+    password,
   } = req.body;
 
   // Verify if user already exists
@@ -350,13 +348,13 @@ const postRegister = (app) => async (req, res) => {
   }
 
   // // Hash password
-  const passwordHash = await generateHash('1234');
+  const passwordHash = await generateHash(password);
 
   // Generate token
-  const token = jwt.sign({
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    email,
-  }, process.env.SECRET_TOKEN_KEY);
+  // const token = jwt.sign({
+  //   exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
+  //   email,
+  // }, process.env.SECRET_TOKEN_KEY);
 
   // Create new user
   let user = null;
@@ -366,10 +364,7 @@ const postRegister = (app) => async (req, res) => {
       password: passwordHash,
       name,
       lastname,
-      roleId,
-      userTokenVerification: token,
-      phone,
-      country,
+      userTokenVerification: null,
     });
   } catch (err) {
     logger.error(`${CONTROLLER}::${FUNC_POST_REGISTER}: ${err.message}`, {

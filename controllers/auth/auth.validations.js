@@ -13,17 +13,17 @@ const {
 } = require('./auth.schema');
 
 const CONTROLLER = 'src/controllers/user/user.validations.js';
-const FUNC_POST_REGISTER_VALIDATION = 'postRegisterValidation()';
+const FUNC_REGISTER_USER_VALIDATION = 'registerUserValidation()';
 const FUNC_POST_LOGIN_VALIDATION = 'postLoginValidation()';
 const FUNC_USER_VERIFICATION_VALIDATION = 'userVerificationValidation()';
 
-const postRegisterValidation = (app) => async (req, res, next) => {
+const registerUserValidation = (app) => async (req, res, next) => {
   const { logger } = app.locals;
 
   try {
     await registerSchema.validateAsync(req.body);
   } catch (err) {
-    logger.warn(`${CONTROLLER}::${FUNC_POST_REGISTER_VALIDATION}: ${err.message}`, {
+    logger.warn(`${CONTROLLER}::${FUNC_REGISTER_USER_VALIDATION}: ${err.message}`, {
       ...req.body,
     });
     res.status(BAD_REQUEST.status)
@@ -69,7 +69,7 @@ const userVerificationValidation = (app) => async (req, res, next) => {
 };
 
 module.exports = {
-  postRegisterValidation,
+  registerUserValidation,
   postLoginValidation,
   userVerificationValidation,
 };
