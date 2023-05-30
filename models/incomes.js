@@ -3,56 +3,50 @@ const {
 } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class user extends Model {
-    static associate({ income }) {
-      user.hasMany(income, {
+  class income extends Model {
+    static associate({ user }) {
+      income.belongsTo(user, {
         foreignKey: 'userId',
-        sourceKey: 'id',
+        targetKey: 'id',
       });
     }
   }
-  user.init({
+  income.init({
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    name: {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'user_id',
+    },
+    category: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    lastname: {
-      type: DataTypes.STRING,
+    amount: {
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING,
+    date: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    userTokenVerification: {
-      type: DataTypes.STRING,
-      field: 'user_token_verification',
-      allowNull: true,
-    },
-    resetPasswordToken: {
-      type: DataTypes.STRING,
-      field: 'reset_password_token',
-      allowNull: true,
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
-    deleted: {
+    used: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    currency: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -68,9 +62,9 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'user',
-    tableName: 'users',
+    modelName: 'income',
+    tableName: 'incomes',
     timestamps: false,
   });
-  return user;
+  return income;
 };
