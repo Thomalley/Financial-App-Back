@@ -20,12 +20,12 @@ const CONTROLLER = 'src/controllers/user/user.validations.js';
 const FUNC_PUT_USER_VALIDATION = 'putUserValidation()';
 const FUNC_GET_USER_VALIDATION = 'getUsersPerPageValidation()';
 const FUNC_GET_FILTERED_USER_VALIDATION = 'getFilteredUsersValidation()';
-const FUNC_POST_CREATE_VALIDATION = 'postCreateValidation()';
-const FUNC_PUT_EDIT_USER_VALIDATION = 'putEditUserValidation()';
+const FUNC_POST_CREATE_VALIDATION = 'createUserValidation()';
+const FUNC_EDIT_USER_VALIDATION = 'editUserValidation()';
 const FUNC_GET_USER_BY_ID_VALIDATION = 'getUserByIdValidation()';
 const FUNC_GET_USERS_BY_ROLE_VALIDATION = 'getUsersByRoleValidation()';
 
-const postCreateValidation = (app) => async (req, res, next) => {
+const createUserValidation = (app) => async (req, res, next) => {
   const { logger } = app.locals;
 
   try {
@@ -90,13 +90,13 @@ const getFilteredUsersValidation = (app) => async (req, res, next) => {
   next();
 };
 
-const putEditUserValidation = (app) => async (req, res, next) => {
+const editUserValidation = (app) => async (req, res, next) => {
   const { logger } = app.locals;
 
   try {
     await editUserSchema.validateAsync(req.body);
   } catch (err) {
-    logger.warn(`${CONTROLLER}::${FUNC_PUT_EDIT_USER_VALIDATION}: ${err.message}`, {
+    logger.warn(`${CONTROLLER}::${FUNC_EDIT_USER_VALIDATION}: ${err.message}`, {
       ...req.body,
     });
     res.status(BAD_REQUEST.status)
@@ -141,8 +141,8 @@ module.exports = {
   putUserValidation,
   getUsersPerPageValidation,
   getFilteredUsersValidation,
-  postCreateValidation,
-  putEditUserValidation,
+  createUserValidation,
+  editUserValidation,
   getUserByIdValidation,
   getUsersByRoleValidation,
 };
