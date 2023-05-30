@@ -31,6 +31,7 @@ module.exports = {
       used: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       currency: {
         type: Sequelize.STRING,

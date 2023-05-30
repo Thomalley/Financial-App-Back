@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
     used: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
     },
     description: {
       type: DataTypes.STRING,
