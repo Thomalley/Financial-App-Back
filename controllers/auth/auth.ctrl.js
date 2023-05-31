@@ -39,8 +39,7 @@ const userVerification = (app) => async (req, res) => {
       logger.warn(`${CONTROLLER}::${FUNC_USER_VERIFICATION}: Missing parameter: token`, {
         ...req.body,
       });
-      res.status(BAD_REQUEST.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Token is required' }));
+      responseGenerator(res, BAD_REQUEST.status, { errorMessage: 'Token is required' });
       return;
     }
 
@@ -53,18 +52,16 @@ const userVerification = (app) => async (req, res) => {
         logger.warn(`${CONTROLLER}::${FUNC_USER_VERIFICATION}: Expired token`, {
           ...req.body,
         });
-        res.status(OK.status).json(
-          responseGenerator(UNAUTHORIZED.status, { errorMessage: 'Expired link' }),
-        );
+
+        responseGenerator(res, UNAUTHORIZED.status, { errorMessage: 'Expired link' });
         return;
       }
     } catch (err) {
       logger.warn(`${CONTROLLER}::${FUNC_USER_VERIFICATION}: Invalid token`, {
         ...req.body,
       });
-      res.status(UNAUTHORIZED.status).json(
-        responseGenerator(UNAUTHORIZED.status, { errorMessage: 'Forbidden' }),
-      );
+
+      responseGenerator(res, UNAUTHORIZED.status, { errorMessage: 'Forbidden' });
       return;
     }
 
@@ -72,8 +69,7 @@ const userVerification = (app) => async (req, res) => {
     const user = await findUserByVerificationToken(app, { token });
     if (!user) {
       logger.warn(`${CONTROLLER}::${FUNC_USER_VERIFICATION}: Token already used or not valid`);
-      res.status(OK.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Link already used or not valid' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Link already used or not valid' });
       return;
     }
 
@@ -88,14 +84,12 @@ const userVerification = (app) => async (req, res) => {
     await user.save();
 
     logger.info(`${CONTROLLER}::${FUNC_USER_VERIFICATION}: User verified successfully.`);
-    res.status(OK.status)
-      .json(responseGenerator(OK.status, {}));
+    responseGenerator(OK.status, {});
   } catch (err) {
     logger.error(`${CONTROLLER}::${FUNC_USER_VERIFICATION}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
   }
 };
 
@@ -119,16 +113,14 @@ const postLogin = (app) => async (req, res) => {
       logger.warn(`${CONTROLLER}::${FUNC_POST_LOGIN}: User does not exist`, {
         ...req.body,
       });
-      res.status(BAD_REQUEST.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Wrong credentials' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Wrong credentials' });
       return;
     }
   } catch (err) {
     logger.error(`${CONTROLLER}::${FUNC_POST_LOGIN}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
     return;
   }
 
@@ -137,8 +129,7 @@ const postLogin = (app) => async (req, res) => {
     logger.warn(`${CONTROLLER}::${FUNC_POST_LOGIN}: User is not validated `, {
       ...req.body,
     });
-    res.status(BAD_REQUEST.status)
-      .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Wrong credentials' }));
+    responseGenerator(BAD_REQUEST.status, { errorMessage: 'Wrong credentials' });
     return;
   }
   // Compare passwords
@@ -147,8 +138,7 @@ const postLogin = (app) => async (req, res) => {
     logger.warn(`${CONTROLLER}::${FUNC_POST_LOGIN}: Password incorrect`, {
       ...req.body,
     });
-    res.status(BAD_REQUEST.status)
-      .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Wrong credentials' }));
+    responseGenerator(BAD_REQUEST.status, { errorMessage: 'Wrong credentials' });
     return;
   }
   // User exists and passwords match
@@ -157,11 +147,9 @@ const postLogin = (app) => async (req, res) => {
     data.accessToken = token;
     data.user = user;
 
-    res.status(OK.status)
-      .json(responseGenerator(OK.status, data));
+    responseGenerator(OK.status, data);
   } catch (err) {
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: 'Access token could not be generated.' }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: 'Access token could not be generated.' });
   }
 };
 
@@ -176,8 +164,7 @@ const recoverPassword = (app) => async (req, res) => {
     logger.warn(`${CONTROLLER}::${FUNC_RECOVER_PASSWORD}: Missing parameter: email`, {
       ...req.body,
     });
-    res.status(OK.status)
-      .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Email is required' }));
+    responseGenerator(BAD_REQUEST.status, { errorMessage: 'Email is required' });
     return;
   }
 
@@ -186,8 +173,7 @@ const recoverPassword = (app) => async (req, res) => {
     const user = await findUser(app, { email: email.toLowerCase() });
     if (!user) {
       logger.warn(`${CONTROLLER}::${FUNC_RECOVER_PASSWORD}: email not found`);
-      res.status(OK.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Unregistered user' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Unregistered user' });
       return;
     }
 
@@ -204,15 +190,13 @@ const recoverPassword = (app) => async (req, res) => {
 
     // Send email
 
-    res.status(OK.status)
-      .json(responseGenerator(OK.status, {}));
+    responseGenerator(OK.status, {});
     return;
   } catch (err) {
     logger.error(`${CONTROLLER}::${FUNC_RECOVER_PASSWORD}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: 'Server error' }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: 'Server error' });
   }
 };
 
@@ -230,8 +214,7 @@ const resetPassword = (app) => async (req, res) => {
       logger.warn(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: Missing parameter: token`, {
         ...req.body,
       });
-      res.status(BAD_REQUEST.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Token is required' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Token is required' });
       return;
     }
 
@@ -239,8 +222,7 @@ const resetPassword = (app) => async (req, res) => {
       logger.warn(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: Missing parameters: password and confirmPassword`, {
         ...req.body,
       });
-      res.status(BAD_REQUEST.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Password and confirmPassword are required' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Password and confirmPassword are required' });
       return;
     }
 
@@ -248,8 +230,7 @@ const resetPassword = (app) => async (req, res) => {
       logger.warn(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: Parameters do not comply with format: password and/or confirmPassword`, {
         ...req.body,
       });
-      res.status(BAD_REQUEST.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Minimum password length is 8 characters' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Minimum password length is 8 characters' });
       return;
     }
 
@@ -257,8 +238,7 @@ const resetPassword = (app) => async (req, res) => {
       logger.warn(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: Parameters do not match: password and confirmPassword`, {
         ...req.body,
       });
-      res.status(BAD_REQUEST.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Passwords do not match' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Passwords do not match' });
       return;
     }
 
@@ -271,18 +251,16 @@ const resetPassword = (app) => async (req, res) => {
         logger.warn(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: Expired token`, {
           ...req.body,
         });
-        res.status(OK.status).json(
-          responseGenerator(UNAUTHORIZED.status, { errorMessage: 'Expired link' }),
-        );
+
+        responseGenerator(res, UNAUTHORIZED.status, { errorMessage: 'Expired link' });
         return;
       }
     } catch (err) {
       logger.warn(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: Invalid token`, {
         ...req.body,
       });
-      res.status(UNAUTHORIZED.status).json(
-        responseGenerator(UNAUTHORIZED.status, { errorMessage: 'Forbidden' }),
-      );
+
+      responseGenerator(res, UNAUTHORIZED.status, { errorMessage: 'Forbidden' });
       return;
     }
 
@@ -290,8 +268,7 @@ const resetPassword = (app) => async (req, res) => {
     const user = await findUserToken(app, { token });
     if (!user) {
       logger.warn(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: Token already used or not valid`);
-      res.status(OK.status)
-        .json(responseGenerator(BAD_REQUEST.status, { errorMessage: 'Link already used or not valid' }));
+      responseGenerator(BAD_REQUEST.status, { errorMessage: 'Link already used or not valid' });
       return;
     }
 
@@ -310,8 +287,7 @@ const resetPassword = (app) => async (req, res) => {
     logger.error(`${CONTROLLER}::${FUNC_RESET_PASSWORD}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
   }
 };
 
@@ -334,16 +310,14 @@ const postRegister = (app) => async (req, res) => {
       logger.warn(`${CONTROLLER}::${FUNC_POST_REGISTER}: User already exists`, {
         ...req.body,
       });
-      res.status(CONFLICT.status)
-        .json(responseGenerator(CONFLICT.status, { errorMessage: 'User already exists' }));
+      responseGenerator(CONFLICT.status, { errorMessage: 'User already exists' });
       return;
     }
   } catch (err) {
     logger.error(`${CONTROLLER}::${FUNC_POST_REGISTER}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
     return;
   }
 
@@ -370,16 +344,14 @@ const postRegister = (app) => async (req, res) => {
     logger.error(`${CONTROLLER}::${FUNC_POST_REGISTER}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
     return;
   }
 
   try {
     // Send email
   } catch (err) {
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: 'Error sending email' }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: 'Error sending email' });
     return;
   }
 

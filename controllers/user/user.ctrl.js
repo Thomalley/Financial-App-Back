@@ -26,21 +26,15 @@ const getUserById = (app) => async (req, res) => {
   try {
     user = await findUserById(app, { id });
     if (!user) {
-      logger.warn(`${CONTROLLER}::${FUNC_GET_USER_BY_ID}: User does not exist`, {
-        ...req.body,
-      });
-      res.status(NOT_FOUND.status)
-        .json(responseGenerator(NOT_FOUND.status, { errorMessage: 'User does not exist or has been deleted' }));
+      logger.warn(`${CONTROLLER}::${FUNC_GET_USER_BY_ID}: User does not exist`, { ...req.body });
+      responseGenerator(NOT_FOUND.status, { errorMessage: 'User does not exist or has been deleted' });
       return;
-    }
-    res.status(OK.status)
-      .json(responseGenerator(OK.status, { user }));
+    } responseGenerator(OK.status, { user });
   } catch (err) {
     logger.error(`${CONTROLLER}::${FUNC_GET_USER_BY_ID}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
   }
 };
 
@@ -73,12 +67,10 @@ const putUser = (app) => async (req, res) => {
     logger.error(`${CONTROLLER}::${FUNC_EDIT_USER}: ${err.message}`, {
       ...req.body,
     });
-    res.status(INTERNAL_SERVER_ERROR.status)
-      .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
     return;
   }
-  res.status(OK.status)
-    .json(responseGenerator(OK.status, { user }));
+  responseGenerator(res, OK.status, { user });
 };
 
 // const deleteUser = (app) => async (req, res) => {

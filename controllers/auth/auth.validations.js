@@ -26,8 +26,7 @@ const registerUserValidation = (app) => async (req, res, next) => {
     logger.warn(`${CONTROLLER}::${FUNC_REGISTER_USER_VALIDATION}: ${err.message}`, {
       ...req.body,
     });
-    res.status(BAD_REQUEST.status)
-      .json(responseGenerator(BAD_REQUEST.status, { errorMessage: err.message }));
+    responseGenerator(res, BAD_REQUEST.status, { errorMessage: err.message });
     return;
   }
 
@@ -43,8 +42,7 @@ const postLoginValidation = (app) => async (req, res, next) => {
     logger.warn(`${CONTROLLER}::${FUNC_POST_LOGIN_VALIDATION}: ${err.message}`, {
       ...req.body,
     });
-    res.status(BAD_REQUEST.status)
-      .json(responseGenerator(BAD_REQUEST.status, { errorMessage: err.message }));
+    responseGenerator(res, BAD_REQUEST.status, { errorMessage: err.message });
     return;
   }
 
@@ -60,8 +58,7 @@ const userVerificationValidation = (app) => async (req, res, next) => {
     logger.warn(`${CONTROLLER}::${FUNC_USER_VERIFICATION_VALIDATION}: ${err.message}`, {
       ...req.body,
     });
-    res.status(BAD_REQUEST.status)
-      .json(responseGenerator(BAD_REQUEST.status, { errorMessage: err.message }));
+    responseGenerator(res, BAD_REQUEST.status, { errorMessage: err.message });
     return;
   }
 

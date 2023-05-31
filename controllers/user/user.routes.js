@@ -4,7 +4,7 @@ const {
 } = require('./user.ctrl');
 
 const {
-  editUserValidation,
+  putUserValidation,
   getUserByIdValidation,
 } = require('./user.validations');
 
@@ -21,9 +21,9 @@ module.exports = (app, router) => {
     postRegister(),
   );
   router.put(
-    '/user/edit',
+    '/user/put',
     isAuthorized(),
-    editUserValidation(app),
+    putUserValidation(app),
     putUser(app),
   );
   router.get(
