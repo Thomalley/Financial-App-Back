@@ -1,5 +1,5 @@
 const {
-  INTERNAL_SERVER_ERROR, OK, NOT_FOUND, CREATED, NO_CONTENT,
+  INTERNAL_SERVER_ERROR, OK, NOT_FOUND, CREATED,
 } = require('../../misc/const/http');
 
 const {
@@ -11,16 +11,15 @@ const {
   editIncome,
   createNewIncome,
   eraseIncome,
-  findFilteredIncome,
-  findIncomePerPage,
+  findIncomesPerPage,
 } = require('./income.services');
 
 const CONTROLLER = 'src/controllers/income/income.ctrl.js';
-const FUNC_GET_INCOME_BY_ID = 'getIncomeById()';
-const FUNC_EDIT_INCOME = 'editIncome()';
-const FUNC_POST_INCOME = 'postIncom()';
-const FUNC_DELETE_INCOME = 'deleteIncome()';
-const FUNC_GET_INCOME_PER_PAGE = 'getIncomePerPage()';
+const GET_INCOME_BY_ID = 'getIncomeById()';
+const EDIT_INCOME = 'editIncome()';
+const POST_INCOME = 'postIncom()';
+const DELETE_INCOME = 'deleteIncome()';
+const GET_INCOME_PER_PAGE = 'getIncomePerPage()';
 
 const postIncome = (app) => async (req, res) => {
   const { logger } = app.locals;
@@ -29,12 +28,11 @@ const postIncome = (app) => async (req, res) => {
     category,
     amount,
     date,
-    used,
     description,
     currency,
   } = req.body;
 
-  const { requestIncome } = res.locals;
+  const { requestUser } = res.locals;
 
   let income = null;
   try {
@@ -42,20 +40,16 @@ const postIncome = (app) => async (req, res) => {
       category,
       amount,
       date,
-      used,
       description,
       currency,
-      incomeId: requestIncome.id,
+      userId: requestUser.id,
     });
   } catch (err) {
-    logger.error(`${CONTROLLER}::${FUNC_POST_INCOME}: ${err.message}`, {
-      ...req.body,
-    });
-    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
+    logger.error(`${CONTROLLER}::${POST_INCOME}: ${err.message}`, { ...req.body });
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, 'No se pudo crear el ingreso', { errorMessage: err.message });
     return;
   }
-
-  responseGenerator(res, CREATED.status, { income });
+  responseGenerator(res, CREATED.status, 'Ingreso registrado exitosamente.', { income });
 };
 
 const getIncomeById = (app) => async (req, res) => {
@@ -67,24 +61,20 @@ const getIncomeById = (app) => async (req, res) => {
   try {
     income = await findIncomeById(app, id);
     if (!income) {
-      logger.warn(`${CONTROLLER}::${FUNC_GET_INCOME_BY_ID}: Income does not exist`, {
-        ...req.body,
-      });
-      responseGenerator(res, NOT_FOUND.status, { errorMessage: 'Income does not exist or has been deleted' });
+      logger.warn(`${CONTROLLER}::${GET_INCOME_BY_ID}: El ingreso no existe`, { ...req.body });
+      responseGenerator(res, NOT_FOUND.status, { errorMessage: 'El ingreso no existe o fue eliminado' });
       return;
     }
-    responseGenerator(res, OK.status, { income });
+    responseGenerator(res, OK.status, 'Ingreso encontrado con éxito', { income });
   } catch (err) {
-    logger.error(`${CONTROLLER}::${FUNC_GET_INCOME_BY_ID}: ${err.message}`, {
-      ...req.body,
-    });
-    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
+    logger.error(`${CONTROLLER}::${GET_INCOME_BY_ID}: ${err.message}`, { ...req.body });
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, 'Error del servidor', { errorMessage: err.message });
   }
 };
 
 const putIncome = (app) => async (req, res) => {
   const { logger } = app.locals;
-
+  const { incomeToModify } = res.locals;
   // Get data
   const {
     id,
@@ -99,7 +89,7 @@ const putIncome = (app) => async (req, res) => {
   // Edit income
   let income = null;
   try {
-    income = await editIncome(app, {
+    income = await editIncome({
       id,
       category,
       amount,
@@ -107,15 +97,13 @@ const putIncome = (app) => async (req, res) => {
       used,
       description,
       currency,
-    });
+    }, incomeToModify);
   } catch (err) {
-    logger.error(`${CONTROLLER}::${FUNC_EDIT_INCOME}: ${err.message}`, {
-      ...req.body,
-    });
-    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
+    logger.error(`${CONTROLLER}::${EDIT_INCOME}: ${err.message}`, { ...req.body });
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, 'Error al intentar editar el ingreso', { errorMessage: err.message });
     return;
   }
-  responseGenerator(res, OK.status, { income });
+  responseGenerator(res, OK.status, 'Su ingreso fue editado exitosamente', { income });
 };
 
 const deleteIncome = (app) => async (req, res) => {
@@ -124,77 +112,42 @@ const deleteIncome = (app) => async (req, res) => {
 
   try {
     await eraseIncome(app, incomesIds);
-    responseGenerator(res, OK.status);
+    responseGenerator(res, OK.status, 'Su ingreso ha sido borrado exitosamente', {});
   } catch (err) {
-    logger.error(`${CONTROLLER}::${FUNC_DELETE_INCOME}: ${err.message}`, {
-      ...req.body,
-    });
-    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
+    logger.error(`${CONTROLLER}::${DELETE_INCOME}: ${err.message}`, { ...req.body });
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, 'Ha ocurrido un error para borrar su ingreso', { errorMessage: err.message });
   }
 };
 
 const getIncomePerPage = (app) => async (req, res) => {
-  const { db, logger } = app.locals;
+  const { logger } = app.locals;
 
   const {
-    limit, page, searchValue, sort,
+    limit, page, category, date, currency,
   } = req.query;
 
   try {
-    let income;
-
-    const [orderBy, order] = sort.split('|');
-
-    if (!db.income.rawAttributes[orderBy]) {
-      logger.error(`${CONTROLLER}::${FUNC_GET_INCOME_PER_PAGE}: Sort attribute does not exist`);
-      responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: 'Sort attribute does not exist' });
-      return;
-    }
-
-    if (searchValue) {
-      income = await findFilteredIncome(app, {
-        limit, page, searchValue, orderBy, order,
-      });
-    } else {
-      income = await findIncomePerPage(app, {
-        limit, page, orderBy, order,
-      });
-    }
+    const income = await findIncomesPerPage(app, {
+      limit, page, category, date, currency,
+    });
 
     if (!income.rows.length) {
-      responseGenerator(res, NO_CONTENT.status, {
+      responseGenerator(res, OK.status, 'No se encontraron ingresos con estos parámetros', {
         income: [],
         totalIncome: 0,
       });
       return;
     }
-    responseGenerator(OK.status, {
+
+    responseGenerator(res, OK.status, 'Ingresos encontrados con estos parámetros exitosamente', {
       income: income.rows,
       totalIncome: income.count,
     });
   } catch (err) {
-    logger.error(`${CONTROLLER}::${FUNC_GET_INCOME_PER_PAGE}: ${err.message}`, {
-      ...req.body,
-    });
-    responseGenerator(res, INTERNAL_SERVER_ERROR.status, { errorMessage: err.message });
+    logger.error(`${CONTROLLER}::${GET_INCOME_PER_PAGE}: ${err.message}`, { ...req.body });
+    responseGenerator(res, INTERNAL_SERVER_ERROR.status, 'Error del servidor', { errorMessage: err.message });
   }
 };
-// const deleteIncome = (app) => async (req, res) => {
-//   const { logger } = app.locals;
-//   const { id } = req.params;
-
-//   try {
-//     await deleteIncomeById(app, { id });
-
-//     res.status(OK.status).json(responseGenerator(OK.status));
-//   } catch (err) {
-//     logger.error(`${CONTROLLER}::${FUNC_DELETE_INCOME}: ${err.message}`, {
-//       ...req.body,
-//     });
-//     res.status(INTERNAL_SERVER_ERROR.status)
-//       .json(responseGenerator(INTERNAL_SERVER_ERROR.status, { errorMessage: err.message }));
-//   }
-// };
 
 module.exports = {
   getIncomeById,

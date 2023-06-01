@@ -1,31 +1,21 @@
 const Joi = require('joi');
 
 const postIncomeSchema = Joi.object({
-  category: Joi.string()
-    .required(),
-  amount: Joi.number()
-    .required(),
-  date: Joi.date()
-    .required(),
-  used: Joi.boolean()
-    .required(),
-  description: Joi.string(),
-  currency: Joi.string()
-    .required(),
+  category: Joi.string().required(),
+  amount: Joi.number().required(),
+  date: Joi.date().required(),
+  description: Joi.string().allow(null, ''),
+  currency: Joi.string().required(),
 });
 
 const putIncomeSchema = Joi.object({
   id: Joi.number().required(),
+  used: Joi.boolean().required(),
   category: Joi.string().required(),
-  amount: Joi.number()
-    .required(),
-  date: Joi.date()
-    .required(),
-  used: Joi.boolean()
-    .required(),
-  description: Joi.string(),
-  currency: Joi.string()
-    .required(),
+  amount: Joi.number().required(),
+  date: Joi.date().required(),
+  description: Joi.string().allow(null, ''),
+  currency: Joi.string().required(),
 });
 
 const deleteIncomeSchema = Joi.object({
@@ -37,10 +27,13 @@ const getIncomeByIdSchema = Joi.object({
 });
 
 const getIncomesPerPageSchema = Joi.object({
-  limit: Joi.number().required(),
-  page: Joi.number().required(),
-  searchValue: Joi.string().allow(''),
+  limit: Joi.number().allow(null, ''),
+  page: Joi.number().allow(null, ''),
+  category: Joi.string().allow(null, ''),
+  date: Joi.date().allow(null, ''),
+  currency: Joi.string().allow(null, ''),
 });
+
 module.exports = {
   putIncomeSchema,
   getIncomeByIdSchema,

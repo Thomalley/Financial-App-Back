@@ -1,36 +1,32 @@
 {
   "env": {
     "commonjs": true,
+    "es2021": true,
     "node": true,
-    "jest": true
+    "jest": true,
+    "browser": true
   },
   "extends": [
     "airbnb-base",
-    "eslint:recommended",
     "plugin:react/recommended"
-  ],
-  "plugins": [
-    "react"
   ],
   "settings": {
     "react": {
       "version": "detect"
     }
   },
+  "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 2019,
+    "ecmaVersion": 12,
     "ecmaFeatures": {
-      "jsx": true
-    }
+      "jsx": true,
+      "modules": true
+  }
   },
-  "globals": {
-    "localStorage": true,
-    "window": true
-  },
+  "ignorePatterns": ["build/"],
   "rules": {
     "linebreak-style": 0,
-    "react/prop-types": 0,
-    "camelcase": "off",
+    "no-param-reassign": [2, { "props": false }],
     "import/no-extraneous-dependencies": [
       "error",
       {
@@ -39,8 +35,6 @@
           "!*.stories.js"
         ]
       }
-    ],
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error"
+    ]
   }
 }

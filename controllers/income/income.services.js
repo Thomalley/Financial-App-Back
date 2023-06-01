@@ -1,16 +1,8 @@
-const sequelize = require('sequelize');
-
-const op = sequelize.Op;
-
-const findIncomeById = async (app, {
-  id,
-}) => {
+const findIncomeById = async (app, { id }) => {
   const { db } = app.locals;
 
   const income = await db.income.findOne({
-    where: {
-      id,
-    },
+    where: { id },
     attributes: { exclude: ['createdAt', 'updatedAt'] },
   });
 
@@ -18,7 +10,6 @@ const findIncomeById = async (app, {
 };
 
 const editIncome = async (
-  app,
   {
     id,
     category,
@@ -28,12 +19,9 @@ const editIncome = async (
     description,
     currency,
   },
+  incomeToModify,
 ) => {
-  const { db } = app.locals;
-
-  const income = await db.income.findByPk(id);
-
-  if (income) {
+  if (incomeToModify) {
     const upToUpdate = {
       id,
       category,
@@ -43,17 +31,16 @@ const editIncome = async (
       description,
       currency,
     };
-    await income.update(upToUpdate);
+    await incomeToModify.update(upToUpdate);
   }
 
-  return income;
+  return incomeToModify;
 };
 
 const createNewIncome = async (app, {
   category,
   amount,
   date,
-  used,
   description,
   currency,
   userId,
@@ -64,7 +51,7 @@ const createNewIncome = async (app, {
     category,
     amount,
     date,
-    used,
+    used: false,
     description,
     currency,
     userId,
@@ -79,63 +66,40 @@ const eraseIncome = async (app, incomesIds) => {
   await db.sequelize.query(deleteIncomesQuery);
 };
 
-const findIncomePerPage = async (app, {
+const findIncomesPerPage = async (app, {
   limit,
   page,
-  orderBy,
-  order,
+  category,
+  date,
+  currency,
 }) => {
   const { db } = app.locals;
+  const where = { used: false };
 
-  const income = await db.income.findAndCountAll({
-    order: [
-      [orderBy, order],
-    ],
-    offset: limit * page,
-    limit: Number.parseInt(limit, 10),
-  });
+  if (category) where.category = category;
+  if (date) where.date = date;
+  if (currency) where.currency = currency;
+
+  const searchQuery = {
+    where,
+    attributes: ['id', 'userId', 'category', 'amount', 'date', 'description', 'currency'],
+    order: [['createdAt', 'DESC'], ['id', 'ASC']],
+  };
+
+  if (limit && page) {
+    searchQuery.offset = limit * page;
+    searchQuery.limit = Number.parseInt(limit, 10);
+  }
+
+  const income = await db.income.findAndCountAll(searchQuery);
 
   return income;
 };
 
-const findFilteredIncome = async (app, {
-  limit,
-  page,
-  searchValue,
-  orderBy,
-  order,
-}) => {
-  const { db } = app.locals;
-
-  const income = await db.income.findAndCountAll({
-    where: {
-      [op.or]: {
-        name: {
-          [op.iLike]: `%${searchValue}%`,
-        },
-        lastname: {
-          [op.iLike]: `%${searchValue}%`,
-        },
-        email: {
-          [op.iLike]: `%${searchValue}%`,
-        },
-      },
-    },
-    order: [
-      [orderBy, order],
-    ],
-    attributes: ['id', 'name', 'lastname', 'email', 'role', 'active', 'updated_at'],
-    offset: limit * page,
-    limit: Number.parseInt(limit, 10),
-  });
-
-  return income;
-};
 module.exports = {
   findIncomeById,
   editIncome,
   createNewIncome,
   eraseIncome,
-  findIncomePerPage,
-  findFilteredIncome,
+  findIncomesPerPage,
 };

@@ -45,7 +45,7 @@ module.exports = (app, router) => {
   );
 
   router.get(
-    'income',
+    'incomes',
     isAuthorized(),
     getIncomesPerPageValidation(app),
     getIncomePerPage(app),
