@@ -92,4 +92,3 @@ El flujo de información sería:
 luego, llama a la *función de validación*, para validar que los parámetros que se están recibiendo sean el tipo de dato requerido y que no falte ninguno. 
 Por último, si nada en ese camino falla, llama a la función que va a realizar la *interacción con la base de datos*.
 
-![API Template mindMap](https://user-images.githubusercontent.com/86272025/186935525-b0ff0a2c-9e70-4990-abe7-b3182fe8f7d9.png)
