@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../../misc/const/http');
-const { responseGenerator } = require('../../misc/utils/http');
+const { responseGenerator } = require('../../misc/utils/responseGenerator');
 
 const isAuthorized = () => async (req, res, next) => {
   const bearerHeader = req.headers.authorization || null;

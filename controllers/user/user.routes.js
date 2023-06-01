@@ -1,29 +1,34 @@
 const {
   getUserById,
   putUser,
+  postLogin,
+  postRegister,
 } = require('./user.ctrl');
 
 const {
-  editUserValidation,
+  putUserValidation,
   getUserByIdValidation,
+  postLoginValidation,
+  registerUserValidation,
 } = require('./user.validations');
-
-const { registerUserValidation } = require('../auth/auth.validations');
 
 const { isAuthorized } = require('../auth/auth.middlewares');
 
-const { postRegister } = require('../auth/auth.ctrl');
-
 module.exports = (app, router) => {
+  router.post(
+    '/login',
+    postLoginValidation(app),
+    postLogin(app),
+  );
   router.post(
     '/user/create',
     registerUserValidation(),
     postRegister(),
   );
   router.put(
-    '/user/edit',
+    '/user/put',
     isAuthorized(),
-    editUserValidation(app),
+    putUserValidation(app),
     putUser(app),
   );
   router.get(
