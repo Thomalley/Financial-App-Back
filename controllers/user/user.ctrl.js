@@ -133,7 +133,7 @@ const getUserById = (app) => async (req, res) => {
   const { logger } = app.locals;
 
   // Get data
-  const { id } = req.params;
+  const { id } = req.body;
 
   // Find user
   let user = null;

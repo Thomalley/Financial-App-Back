@@ -14,10 +14,6 @@ const createNewUser = async (app, {
   name,
   lastname,
   password,
-  roleId,
-  userTokenVerification,
-  phone,
-  country,
 }) => {
   const { db } = app.locals;
 
@@ -26,10 +22,6 @@ const createNewUser = async (app, {
     name,
     lastname,
     password,
-    roleId,
-    userTokenVerification,
-    phone,
-    country,
   });
 
   return user;
@@ -38,7 +30,7 @@ const createNewUser = async (app, {
 const editUser = async (
   app,
   {
-    id, active, name, lastname, email, roleId, phone, country,
+    id, active, name, lastname, email, deleted,
   },
 ) => {
   const { db } = app.locals;
@@ -47,13 +39,12 @@ const editUser = async (
 
   if (user) {
     const upToUpdate = {
+      id,
       active,
       name,
       lastname,
       email,
-      roleId,
-      phone,
-      country,
+      deleted,
     };
     await user.update(upToUpdate);
   }

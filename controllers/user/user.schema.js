@@ -17,7 +17,7 @@ const loginSchema = Joi.object({
   password: Joi.string().pattern(new RegExp(pre)).required(),
 });
 
-const editUserSchema = Joi.object({
+const putUserSchema = Joi.object({
   id: Joi.number().required(),
   active: Joi.boolean().required(),
   email: Joi.string()
@@ -38,7 +38,7 @@ const getUserByIdSchema = Joi.object({
 });
 
 module.exports = {
-  editUserSchema,
+  putUserSchema,
   getUserByIdSchema,
   registerSchema,
   loginSchema,
