@@ -48,11 +48,6 @@ app.use('/', routes(app));
 
 http.createServer(app);
 
-if (!process.env.SENDGRID_API_KEY || !process.env.BASE_URL) {
-  logger.error('server: missing sendgrid env vars');
-  process.exit(1);
-}
-
 if (!process.env.SECRET_TOKEN_KEY) {
   logger.error('server: missing JWT env vars');
   process.exit(1);
@@ -64,8 +59,7 @@ const server = app.listen(PORT, '0.0.0.0', (err) => {
     process.exit(1);
   }
 
-  logger.info('----- EXAMPLE Server -----');
-  logger.info(`Environment: ${NODE_ENV}`);
+  logger.info('SERVER UP!');
   logger.info(`Port: ${PORT}`);
   logger.info(`Database Name: ${app.locals.db.sequelize.getDatabaseName()}`);
 });

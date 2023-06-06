@@ -22,8 +22,8 @@ module.exports = (app, router) => {
   );
   router.post(
     '/user/create',
-    registerUserValidation(),
-    postRegister(),
+    registerUserValidation(app),
+    postRegister(app),
   );
   router.put(
     '/user/edit',
